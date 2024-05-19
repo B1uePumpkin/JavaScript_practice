@@ -1,3 +1,4 @@
+//[{text: '洗衣服', checked: false}, {text: '寫文案', checked: true}]
 let listState = [];
 
 const STATE_KEY = "todo-list";
@@ -15,7 +16,7 @@ function saveState(list) {
 }
 
 function initList() {
-  //load state
+  // load state
   listState = loadState();
   // render list
   const ul = document.getElementById("list");
@@ -43,13 +44,13 @@ function addItem() {
   const input = document.getElementById("input");
   const text = input.value;
   if (text === "") {
-    alert("Please enter a task");
+    alert("請輸入內容");
     return;
   }
 
   const newItem = document.createElement("li");
   newItem.classList.add("item");
-  newItem.innerHTML = text;
+  newItem.innerText = text;
 
   newItem.onclick = checkItem;
 
@@ -61,7 +62,7 @@ function addItem() {
 
   listState.push({
     text,
-    checked: false,
+    checked: false
   });
   saveState(listState);
 
@@ -69,12 +70,12 @@ function addItem() {
   ul.appendChild(newItem);
 }
 
-function checkItem() {
-  const item = this;
+function checkItem(e) {
+  const item = e.target;
   const parent = item.parentNode;
-  const index = Array.from(parent.childNodes).indexOf(item);
+  const idx = Array.from(parent.childNodes).indexOf(item);
 
-  listState[index].checked = !listState[index].checked;
+  listState[idx].checked = !listState[idx].checked;
 
   item.classList.toggle("checked");
   saveState(listState);
@@ -83,8 +84,8 @@ function checkItem() {
 function deleteItem(e) {
   const item = this.parentNode;
   const parent = item.parentNode;
-  const index = Array.from(parent.childNodes).indexOf(item);
-  listState = listState.filter((_, idx) => idx !== index);
+  const idx = Array.from(parent.childNodes).indexOf(item);
+  listState = listState.filter((_, i) => i !== idx);
   parent.removeChild(item);
   saveState(listState);
   e.stopPropagation();

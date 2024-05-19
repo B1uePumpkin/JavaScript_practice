@@ -1,3 +1,43 @@
+let listState = [];
+
+const STATE_KEY = "todo-list";
+
+function loadState() {
+  const listState = localStorage.getItem(STATE_KEY);
+  if (listState !== null) {
+    return JSON.parse(listState);
+  }
+  return [];
+}
+
+function saveState(list) {
+  localStorage.setItem(STATE_KEY, JSON.stringify(list));
+}
+
+function initList() {
+  //load state
+  listState = loadState();
+  // render list
+  const ul = document.getElementById("list");
+  for (const item of listState) {
+    const li = document.createElement("li");
+    li.innerText = item.text;
+
+    const deleteButton = document.createElement("span");
+    deleteButton.classList.add("delete");
+    deleteButton.onclick = deleteItem;
+    li.appendChild(deleteButton);
+
+    li.classlist.add("item");
+    if (item.checked) {
+      li.classList.add("checked");
+    }
+    li.onclick = checkItem;
+
+    ul.appendChild(li);
+  }
+}
+
 function addItem() {
   const ul = document.getElementById("list");
   const input = document.getElementById("input");
@@ -19,21 +59,38 @@ function addItem() {
 
   newItem.appendChild(deleteButton);
 
+  listState.push({
+    text,
+    checked: false,
+  });
+  saveState(listState);
+
   input.value = "";
   ul.appendChild(newItem);
 }
 
 function checkItem() {
-  console.log("check");
   const item = this;
+  const parent = item.parentNode;
+  const index = Array.from(parent.childNodes).indexOf(item);
+
+  listState[index].checked = !listState[index].checked;
+
   item.classList.toggle("checked");
+  saveState(listState);
 }
 
-function deleteItem() {
-  console.log("delete");
+function deleteItem(e) {
   const item = this.parentNode;
-  item.remove();
+  const parent = item.parentNode;
+  const index = Array.from(parent.childNodes).indexOf(item);
+  listState = listState.filter((_, idx) => idx !== index);
+  parent.removeChild(item);
+  saveState(listState);
+  e.stopPropagation();
 }
+
+initList();
 
 const addButton = document.getElementById("add-button");
 addButton.addEventListener("click", addItem);
